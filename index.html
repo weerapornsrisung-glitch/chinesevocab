@@ -176,7 +176,7 @@ body {
 }
 .tap-hint { font-size: 0.78rem; color: var(--muted); margin-top: 10px; }
 .py { font-size: 1.5rem; font-weight: 800; color: #8E44AD; margin-bottom: 6px; }
-.en { font-size: 1.05rem; font-weight: 700; color: var(--dark); text-align: center; padding: 0 16px; }
+.en { font-size: 1.25rem; font-weight: 700; color: var(--dark); text-align: center; padding: 0 20px; line-height: 1.4; }
 .zh-sm {
   font-family: 'ZCOOL KuaiLe', cursive;
   font-size: 1.6rem; color: var(--muted); margin-top: 8px;
@@ -363,12 +363,11 @@ body {
     <div class="card" id="word-card" onclick="flipCard()">
       <div class="face front">
         <div class="zh" id="c-zh">好</div>
-        <div class="tap-hint">👆 tap to reveal</div>
+        <div class="py" id="c-py">hǎo</div>
+        <div class="tap-hint">👆 tap to reveal meaning</div>
       </div>
       <div class="face back">
-        <div class="py" id="c-py">hǎo</div>
         <div class="en" id="c-en">good</div>
-        <div class="zh-sm" id="c-zh2">好</div>
       </div>
     </div>
   </div>
@@ -691,10 +690,9 @@ function renderWord() {
   flipped = false;
   const card = document.getElementById('word-card');
   card.classList.remove('flipped');
-  document.getElementById('c-zh').textContent  = w.c;
-  document.getElementById('c-py').textContent  = w.p;
-  document.getElementById('c-en').textContent  = w.e;
-  document.getElementById('c-zh2').textContent = w.c;
+  document.getElementById('c-zh').textContent = w.c;
+  document.getElementById('c-py').textContent = w.p;
+  document.getElementById('c-en').textContent = w.e;
   document.getElementById('ans-btns').classList.add('hidden');
   document.getElementById('rev-note').style.display = 'block';
   document.getElementById('prog-txt').textContent = `Word ${idx + 1} / ${words.length}`;

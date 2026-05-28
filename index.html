@@ -97,6 +97,35 @@ body {
 }
 .level-pill .lp-lbl { font-size: 0.7rem; color: rgba(255,255,255,0.85); }
 .level-pill .lp-name { font-size: 1.3rem; font-weight: 900; color: white; }
+/* Level picker */
+.lvl-picker {
+  display: flex; gap: 10px;
+  margin-bottom: 14px;
+}
+.lvl-btn {
+  flex: 1; padding: 12px 8px;
+  border: 2.5px solid var(--lavender);
+  border-radius: 16px;
+  background: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem; font-weight: 800;
+  color: var(--muted); cursor: pointer;
+  transition: all 0.18s;
+}
+.lvl-btn:hover { border-color: var(--dark); color: var(--dark); }
+.lvl-btn.active {
+  background: linear-gradient(135deg, var(--lavender), var(--peach));
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 14px rgba(199,184,234,0.45);
+}
+.lvl-btn .lvl-tag {
+  display: block; font-size: 1.1rem; font-weight: 900;
+}
+.lvl-btn .lvl-desc {
+  display: block; font-size: 0.7rem; opacity: 0.85; margin-top: 1px;
+}
+
 .btn-start {
   width: 100%;
   padding: 18px;
@@ -321,6 +350,16 @@ body {
     <div class="lp-lbl">Current Level</div>
     <div class="lp-name" id="h-lvl">学生 Student</div>
   </div>
+  <div class="lvl-picker">
+    <button class="lvl-btn" id="btn-hsk2" onclick="pickLevel(2)">
+      <span class="lvl-tag">HSK 2</span>
+      <span class="lvl-desc">Elementary · 100 words</span>
+    </button>
+    <button class="lvl-btn active" id="btn-hsk34" onclick="pickLevel(34)">
+      <span class="lvl-tag">HSK 3–4</span>
+      <span class="lvl-desc">Intermediate · 200 words</span>
+    </button>
+  </div>
   <button class="btn-start" onclick="startSession()">✨ Start Quiz ✨</button>
 </div>
 
@@ -430,8 +469,113 @@ body {
 <div class="pt-pop" id="pt-pop">+10</div>
 
 <script>
-// ── VOCABULARY: 200 real HSK 3-4 words ──
-const VOCAB = [
+// ── VOCABULARY ──
+const VOCAB_2 = [
+  {c:'吧',p:'ba',e:'(suggestion / probability particle)'},
+  {c:'白',p:'bái',e:'white; plain, blank'},
+  {c:'百',p:'bǎi',e:'hundred'},
+  {c:'帮助',p:'bāngzhù',e:'to help, assist; help'},
+  {c:'比',p:'bǐ',e:'compared to, than; to compare'},
+  {c:'别',p:'bié',e:"don't; other, another"},
+  {c:'不但',p:'búdàn',e:'not only'},
+  {c:'长',p:'cháng',e:'long; length'},
+  {c:'唱歌',p:'chàng gē',e:'to sing (a song)'},
+  {c:'出',p:'chū',e:'to go out, come out; exit'},
+  {c:'穿',p:'chuān',e:'to wear, put on; to pass through'},
+  {c:'从',p:'cóng',e:'from; since'},
+  {c:'错',p:'cuò',e:'wrong, mistaken; mistake'},
+  {c:'但是',p:'dànshì',e:'but, however'},
+  {c:'到',p:'dào',e:'to arrive; to; until'},
+  {c:'地方',p:'dìfang',e:'place, location, area'},
+  {c:'地铁',p:'dìtiě',e:'subway, metro, underground'},
+  {c:'弟弟',p:'dìdi',e:'younger brother'},
+  {c:'对',p:'duì',e:'correct, right; toward, to'},
+  {c:'饿',p:'è',e:'hungry'},
+  {c:'耳朵',p:'ěrduo',e:'ear'},
+  {c:'方便',p:'fāngbiàn',e:'convenient, handy'},
+  {c:'放',p:'fàng',e:'to put, place; to release, let go'},
+  {c:'非常',p:'fēicháng',e:'very, extremely, highly'},
+  {c:'服务员',p:'fúwùyuán',e:'waiter, attendant, service staff'},
+  {c:'告诉',p:'gàosu',e:'to tell, inform'},
+  {c:'哥哥',p:'gēge',e:'older brother'},
+  {c:'给',p:'gěi',e:'to give; for, to'},
+  {c:'公共汽车',p:'gōnggòng qìchē',e:'bus (public)'},
+  {c:'公斤',p:'gōngjīn',e:'kilogram'},
+  {c:'公司',p:'gōngsī',e:'company, firm, corporation'},
+  {c:'贵',p:'guì',e:'expensive; precious'},
+  {c:'过',p:'guò',e:'to pass, go through; (completed action marker)'},
+  {c:'还',p:'hái',e:'still; also, in addition'},
+  {c:'还是',p:'háishi',e:'or (in questions); still, had better'},
+  {c:'孩子',p:'háizi',e:'child, children'},
+  {c:'好像',p:'hǎoxiàng',e:'seems like, as if, looks like'},
+  {c:'号',p:'hào',e:'number; date; size'},
+  {c:'黑',p:'hēi',e:'black; dark'},
+  {c:'红',p:'hóng',e:'red'},
+  {c:'后来',p:'hòulái',e:'afterwards, later on'},
+  {c:'画',p:'huà',e:'to draw, paint; painting, picture'},
+  {c:'欢迎',p:'huānyíng',e:'to welcome; welcome!'},
+  {c:'黄',p:'huáng',e:'yellow'},
+  {c:'回来',p:'huílái',e:'to come back, return'},
+  {c:'火车站',p:'huǒchēzhàn',e:'train station'},
+  {c:'机场',p:'jīchǎng',e:'airport'},
+  {c:'鸡蛋',p:'jīdàn',e:'egg'},
+  {c:'件',p:'jiàn',e:'(measure for clothing, matters); item'},
+  {c:'脚',p:'jiǎo',e:'foot; leg (of furniture)'},
+  {c:'教',p:'jiāo',e:'to teach'},
+  {c:'姐姐',p:'jiějie',e:'older sister'},
+  {c:'介绍',p:'jièshào',e:'to introduce; introduction'},
+  {c:'进',p:'jìn',e:'to enter, go in'},
+  {c:'近',p:'jìn',e:'near, close; recent'},
+  {c:'就',p:'jiù',e:'just, right away; as soon as; then'},
+  {c:'觉得',p:'juéde',e:'to feel, think, find'},
+  {c:'开始',p:'kāishǐ',e:'to begin, start; beginning'},
+  {c:'考试',p:'kǎoshì',e:'exam, test; to sit an exam'},
+  {c:'可以',p:'kěyǐ',e:'can, may; be allowed to'},
+  {c:'课',p:'kè',e:'class, lesson, course'},
+  {c:'口',p:'kǒu',e:'mouth; (measure for family members)'},
+  {c:'快',p:'kuài',e:'fast, quick, soon'},
+  {c:'累',p:'lèi',e:'tired, exhausted, weary'},
+  {c:'离',p:'lí',e:'away from; to leave'},
+  {c:'脸',p:'liǎn',e:'face'},
+  {c:'两',p:'liǎng',e:'two (before measure words)'},
+  {c:'路',p:'lù',e:'road, path, route'},
+  {c:'卖',p:'mài',e:'to sell'},
+  {c:'慢',p:'màn',e:'slow'},
+  {c:'忙',p:'máng',e:'busy'},
+  {c:'每',p:'měi',e:'every, each'},
+  {c:'门',p:'mén',e:'door, gate; entrance'},
+  {c:'面包',p:'miànbāo',e:'bread'},
+  {c:'明白',p:'míngbai',e:'to understand; clear, obvious'},
+  {c:'男人',p:'nánrén',e:'man, male'},
+  {c:'您',p:'nín',e:'you (polite / formal)'},
+  {c:'牛奶',p:'niúnǎi',e:'milk'},
+  {c:'旁边',p:'pángbiān',e:'beside, next to, nearby'},
+  {c:'跑步',p:'pǎobù',e:'to jog, run'},
+  {c:'票',p:'piào',e:'ticket'},
+  {c:'妻子',p:'qīzi',e:'wife'},
+  {c:'起床',p:'qǐchuáng',e:'to get up, get out of bed'},
+  {c:'前',p:'qián',e:'front; before, ago'},
+  {c:'球',p:'qiú',e:'ball; sphere'},
+  {c:'然后',p:'ránhòu',e:'then, after that, afterwards'},
+  {c:'让',p:'ràng',e:'to let, allow; to make (someone do)'},
+  {c:'上班',p:'shàng bān',e:'to go to work, be at work'},
+  {c:'生病',p:'shēng bìng',e:'to fall ill, get sick'},
+  {c:'生日',p:'shēngrì',e:'birthday'},
+  {c:'时间',p:'shíjiān',e:'time; period'},
+  {c:'试',p:'shì',e:'to try, attempt; test'},
+  {c:'手',p:'shǒu',e:'hand'},
+  {c:'手机',p:'shǒujī',e:'mobile phone, cell phone'},
+  {c:'送',p:'sòng',e:'to give (as a gift); to deliver; to see off'},
+  {c:'虽然',p:'suīrán',e:'although, even though'},
+  {c:'甜',p:'tián',e:'sweet'},
+  {c:'同事',p:'tóngshì',e:'colleague, co-worker'},
+  {c:'图书馆',p:'túshūguǎn',e:'library'},
+  {c:'玩',p:'wán',e:'to play, have fun, enjoy'},
+  {c:'为什么',p:'wèishénme',e:'why, for what reason'},
+  {c:'问题',p:'wèntí',e:'question; problem, issue'},
+];
+
+const VOCAB_34 = [
   // HSK 3
   {c:'爱好',p:'àihào',e:'hobby, interest'},
   {c:'安静',p:'ānjìng',e:'quiet, peaceful'},
@@ -653,6 +797,7 @@ const VOCAB = [
 // ── STATE ──
 let totalXP = 0, sessCount = 0, bestScore = 0;
 let words = [], idx = 0, sessScore = 0, okCnt = 0, noCnt = 0, flipped = false;
+let selLevel = 34;
 
 // ── HELPERS ──
 function getLevel(xp) {
@@ -677,9 +822,17 @@ function updateHome() {
   document.getElementById('h-pill').style.background = getLevelBg(totalXP);
 }
 
+// ── LEVEL PICKER ──
+function pickLevel(lvl) {
+  selLevel = lvl;
+  document.getElementById('btn-hsk2').classList.toggle('active', lvl === 2);
+  document.getElementById('btn-hsk34').classList.toggle('active', lvl === 34);
+}
+
 // ── SESSION ──
 function startSession() {
-  words = [...VOCAB].sort(() => Math.random() - 0.5).slice(0, 10);
+  const pool = selLevel === 2 ? VOCAB_2 : VOCAB_34;
+  words = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
   idx = 0; sessScore = 0; okCnt = 0; noCnt = 0;
   show('s-study');
   renderWord();

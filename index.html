@@ -150,6 +150,17 @@ body {
   align-items: center;
   margin-bottom: 10px;
 }
+.btn-home {
+  background: white;
+  border: 2px solid var(--lavender);
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem; font-weight: 800;
+  color: var(--muted); cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-home:hover { border-color: var(--dark); color: var(--dark); }
 .prog-text { font-weight: 700; color: var(--muted); font-size: 0.85rem; }
 .score-chip {
   background: var(--yellow);
@@ -366,6 +377,7 @@ body {
 <!-- STUDY -->
 <div id="s-study" class="screen">
   <div class="study-top">
+    <button class="btn-home" onclick="show('s-home')">← Home</button>
     <div class="prog-text" id="prog-txt">Word 1 / 10</div>
     <div class="score-chip">⭐ <span id="sess-score">0</span> pts</div>
   </div>
@@ -461,6 +473,7 @@ body {
     </div>
     <div class="sum-msg" id="sum-msg">Every word learned brings you closer to fluency!</div>
     <button class="btn-again" onclick="startSession()">🔄 Study Again</button>
+    <button class="btn-home" style="margin-top:10px;width:100%;padding:12px;" onclick="show('s-home')">← Back to Home</button>
   </div>
 </div>
 

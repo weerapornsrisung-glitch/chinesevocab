@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>汉字道 HanziDō</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<style>
+:root {
+  --peach: #FFB5A7;
+  --peach-light: #FFE4DE;
+  --mint: #B5EAD7;
+  --mint-light: #D8F5EC;
+  --lavender: #C7B8EA;
+  --lavender-light: #E8E1F7;
+  --cream: #FFF9F0;
+  --yellow: #FFEAA7;
+  --green: #6BCB77;
+  --red: #FF6B6B;
+  --dark: #4A3F6B;
+  --text: #5A4A7A;
+  --muted: #9A8ABB;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(135deg, var(--peach-light) 0%, var(--lavender-light) 50%, var(--mint-light) 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+.app { width: 100%; max-width: 420px; padding: 20px; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── HOME ── */
+.home-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.home-title .han {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 3rem;
+  color: var(--dark);
+  display: block;
+  line-height: 1;
+}
+.home-title .rom {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+.home-title .sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.mascot-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+.panda { transition: transform 0.2s; }
+.panda.bounce { animation: bounce 0.5s ease; }
+.panda.shake  { animation: shake  0.4s ease; }
+@keyframes bounce {
+  0%,100%{ transform: translateY(0); }
+  35%    { transform: translateY(-14px); }
+  65%    { transform: translateY(-6px); }
+}
+@keyframes shake {
+  0%,100%{ transform: translateX(0); }
+  25%    { transform: translateX(-7px); }
+  75%    { transform: translateX(7px); }
+}
+.stats-row {
+  background: white;
+  border-radius: 20px;
+  padding: 14px 10px;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+}
+.stat { text-align: center; }
+.stat-num { font-size: 1.6rem; font-weight: 900; color: var(--dark); line-height: 1; }
+.stat-lbl { font-size: 0.7rem; color: var(--muted); }
+.level-pill {
+  border-radius: 14px;
+  padding: 12px 20px;
+  text-align: center;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--lavender), var(--peach));
+}
+.level-pill .lp-lbl { font-size: 0.7rem; color: rgba(255,255,255,0.85); }
+.level-pill .lp-name { font-size: 1.3rem; font-weight: 900; color: white; }
+.btn-start {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, #55EFC4, #00CEC9);
+  border: none;
+  border-radius: 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,206,201,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-start:hover  { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,206,201,0.45); }
+.btn-start:active { transform: translateY(1px); }
+
+/* ── STUDY ── */
+.study-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.prog-text { font-weight: 700; color: var(--muted); font-size: 0.85rem; }
+.score-chip {
+  background: var(--yellow);
+  border-radius: 12px;
+  padding: 5px 12px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #7D6008;
+}
+.prog-bar-bg {
+  background: white;
+  border-radius: 8px;
+  height: 7px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.prog-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mint), var(--lavender));
+  border-radius: 8px;
+  transition: width 0.4s ease;
+}
+.study-mascot { display: flex; justify-content: center; margin-bottom: 10px; }
+
+/* Card flip */
+.scene { perspective: 900px; margin-bottom: 14px; }
+.card {
+  width: 100%; height: 210px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.34,1.4,0.64,1);
+  cursor: pointer;
+}
+.card.flipped { transform: rotateY(180deg); }
+.face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: 24px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.09);
+}
+.face.front { background: white; }
+.face.back  {
+  background: linear-gradient(135deg, var(--lavender-light), var(--mint-light));
+  transform: rotateY(180deg);
+}
+.zh {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 5rem;
+  color: var(--dark);
+  line-height: 1;
+}
+.tap-hint { font-size: 0.78rem; color: var(--muted); margin-top: 10px; }
+.py { font-size: 1.5rem; font-weight: 800; color: #8E44AD; margin-bottom: 6px; }
+.en { font-size: 1.05rem; font-weight: 700; color: var(--dark); text-align: center; padding: 0 16px; }
+.zh-sm {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 1.6rem; color: var(--muted); margin-top: 8px;
+}
+
+/* Answer buttons */
+.ans-btns {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 4px;
+}
+.ans-btns.hidden { display: none; }
+.btn-wrong, .btn-right {
+  padding: 14px 10px;
+  border: none; border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s;
+}
+.btn-wrong { background: var(--peach); color: #B03A2E; }
+.btn-right  { background: var(--mint);  color: #1A7A4A; }
+.btn-wrong:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn-right:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn-wrong:active, .btn-right:active { transform: translateY(1px); }
+.reveal-note { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+
+/* Point pop */
+.pt-pop {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 2rem; font-weight: 900;
+  pointer-events: none; opacity: 0; z-index: 999;
+}
+.pt-pop.go { animation: ptAnim 0.75s ease forwards; }
+@keyframes ptAnim {
+  0%   { opacity:1; transform: translate(-50%,-50%) scale(0.6); }
+  40%  { opacity:1; transform: translate(-50%,-80%) scale(1.5); }
+  100% { opacity:0; transform: translate(-50%,-130%) scale(1.1); }
+}
+
+/* ── SUMMARY ── */
+.sum-card {
+  background: white;
+  border-radius: 28px;
+  padding: 28px 22px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.09);
+}
+.sum-emoji { font-size: 2.8rem; margin-bottom: 6px; }
+.sum-title { font-size: 1.7rem; font-weight: 900; color: var(--dark); }
+.sum-sub   { font-size: 0.85rem; color: var(--muted); margin-bottom: 18px; }
+.sum-big   { font-size: 3.5rem; font-weight: 900; color: #8E44AD; line-height: 1; }
+.sum-big-lbl { font-size: 0.8rem; color: var(--muted); margin-bottom: 18px; }
+.sum-stats {
+  display: flex; justify-content: center; gap: 28px;
+  margin-bottom: 18px;
+}
+.sum-stat .n { font-size: 2rem; font-weight: 900; }
+.sum-stat .n.g { color: var(--green); }
+.sum-stat .n.r { color: var(--red); }
+.sum-stat .l { font-size: 0.72rem; color: var(--muted); }
+.sum-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--lavender), var(--peach));
+  border-radius: 14px;
+  padding: 10px 22px;
+  margin-bottom: 18px;
+}
+.sum-badge .b-lbl  { font-size: 0.7rem; color: rgba(255,255,255,0.85); }
+.sum-badge .b-name { font-size: 1.3rem; font-weight: 900; color: white; }
+.sum-msg { font-size: 0.88rem; color: var(--muted); line-height: 1.5; margin-bottom: 22px; }
+.btn-again {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--peach), var(--lavender));
+  border: none; border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.05rem; font-weight: 900;
+  color: white; cursor: pointer;
+  box-shadow: 0 5px 18px rgba(199,184,234,0.45);
+  transition: transform 0.15s;
+}
+.btn-again:hover  { transform: translateY(-2px); }
+.btn-again:active { transform: translateY(1px); }
+
+/* Confetti */
+.cf {
+  position: fixed; top: -12px;
+  width: 9px; height: 9px;
+  pointer-events: none; z-index: 9999;
+  animation: cfFall linear forwards;
+}
+@keyframes cfFall {
+  to { transform: translateY(110vh) rotate(540deg); opacity: 0; }
+}
+
+@media (max-width: 400px) {
+  .zh { font-size: 4rem; }
+  .card { height: 190px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div id="s-home" class="screen active">
+  <div class="home-title">
+    <span class="han">汉字道</span>
+    <div class="rom">HanziDō</div>
+    <div class="sub">HSK 3–4 Vocabulary Quiz</div>
+  </div>
+  <div class="mascot-wrap">
+    <svg id="p-home" class="panda" width="150" height="150" viewBox="0 0 160 160">
+      <ellipse cx="80" cy="112" rx="48" ry="36" fill="white"/>
+      <ellipse cx="37" cy="44" rx="21" ry="21" fill="#2C2C2C"/>
+      <ellipse cx="123" cy="44" rx="21" ry="21" fill="#2C2C2C"/>
+      <ellipse cx="80" cy="70" rx="45" ry="43" fill="white"/>
+      <ellipse cx="58" cy="63" rx="16" ry="13" fill="#1A1A1A"/>
+      <ellipse cx="102" cy="63" rx="16" ry="13" fill="#1A1A1A"/>
+      <ellipse cx="58" cy="62" rx="8" ry="8" fill="white"/>
+      <ellipse cx="102" cy="62" rx="8" ry="8" fill="white"/>
+      <circle cx="60" cy="62" r="5" fill="#222"/>
+      <circle cx="104" cy="62" r="5" fill="#222"/>
+      <circle cx="62" cy="60" r="1.8" fill="white"/>
+      <circle cx="106" cy="60" r="1.8" fill="white"/>
+      <ellipse cx="80" cy="77" rx="8" ry="5" fill="#F9A8C0"/>
+      <path d="M70 85 Q80 96 90 85" stroke="#F9A8C0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="51" cy="79" rx="9" ry="5.5" fill="#FFB5A7" opacity="0.55"/>
+      <ellipse cx="109" cy="79" rx="9" ry="5.5" fill="#FFB5A7" opacity="0.55"/>
+      <ellipse cx="80" cy="116" rx="24" ry="18" fill="#F0F0F0"/>
+      <ellipse cx="31" cy="116" rx="15" ry="9" fill="white" transform="rotate(-18,31,116)"/>
+      <ellipse cx="129" cy="116" rx="15" ry="9" fill="white" transform="rotate(18,129,116)"/>
+    </svg>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num" id="h-xp">0</div><div class="stat-lbl">Total XP</div></div>
+    <div class="stat"><div class="stat-num" id="h-sess">0</div><div class="stat-lbl">Sessions</div></div>
+    <div class="stat"><div class="stat-num" id="h-best">0</div><div class="stat-lbl">Best Score</div></div>
+  </div>
+  <div class="level-pill" id="h-pill">
+    <div class="lp-lbl">Current Level</div>
+    <div class="lp-name" id="h-lvl">学生 Student</div>
+  </div>
+  <button class="btn-start" onclick="startSession()">✨ Start Quiz ✨</button>
+</div>
+
+<!-- STUDY -->
+<div id="s-study" class="screen">
+  <div class="study-top">
+    <div class="prog-text" id="prog-txt">Word 1 / 10</div>
+    <div class="score-chip">⭐ <span id="sess-score">0</span> pts</div>
+  </div>
+  <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
+
+  <div class="study-mascot">
+    <svg id="p-study" class="panda" width="88" height="88" viewBox="0 0 160 160">
+      <ellipse cx="80" cy="112" rx="48" ry="36" fill="white"/>
+      <ellipse cx="37" cy="44" rx="21" ry="21" fill="#2C2C2C"/>
+      <ellipse cx="123" cy="44" rx="21" ry="21" fill="#2C2C2C"/>
+      <ellipse cx="80" cy="70" rx="45" ry="43" fill="white"/>
+      <ellipse cx="58" cy="63" rx="16" ry="13" fill="#1A1A1A"/>
+      <ellipse cx="102" cy="63" rx="16" ry="13" fill="#1A1A1A"/>
+      <ellipse cx="58" cy="62" rx="8" ry="8" fill="white"/>
+      <ellipse cx="102" cy="62" rx="8" ry="8" fill="white"/>
+      <circle cx="60" cy="62" r="5" fill="#222"/>
+      <circle cx="104" cy="62" r="5" fill="#222"/>
+      <circle cx="62" cy="60" r="1.8" fill="white"/>
+      <circle cx="106" cy="60" r="1.8" fill="white"/>
+      <ellipse cx="80" cy="77" rx="8" ry="5" fill="#F9A8C0"/>
+      <!-- mouths: one shown at a time -->
+      <g id="m-happy"><path d="M70 85 Q80 96 90 85" stroke="#F9A8C0" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+      <g id="m-sad"   style="display:none"><path d="M70 90 Q80 81 90 90" stroke="#F9A8C0" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+      <g id="m-wow"   style="display:none"><ellipse cx="80" cy="88" rx="8" ry="6" fill="#F9A8C0" opacity="0.7"/></g>
+      <ellipse cx="51" cy="79" rx="9" ry="5.5" fill="#FFB5A7" opacity="0.55"/>
+      <ellipse cx="109" cy="79" rx="9" ry="5.5" fill="#FFB5A7" opacity="0.55"/>
+      <ellipse cx="80" cy="116" rx="24" ry="18" fill="#F0F0F0"/>
+      <ellipse cx="31" cy="116" rx="15" ry="9" fill="white" transform="rotate(-18,31,116)"/>
+      <ellipse cx="129" cy="116" rx="15" ry="9" fill="white" transform="rotate(18,129,116)"/>
+    </svg>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="word-card" onclick="flipCard()">
+      <div class="face front">
+        <div class="zh" id="c-zh">好</div>
+        <div class="tap-hint">👆 tap to reveal</div>
+      </div>
+      <div class="face back">
+        <div class="py" id="c-py">hǎo</div>
+        <div class="en" id="c-en">good</div>
+        <div class="zh-sm" id="c-zh2">好</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ans-btns hidden" id="ans-btns">
+    <button class="btn-wrong" onclick="rate(false)">✗ Don't Know<br><small>+2 pts</small></button>
+    <button class="btn-right"  onclick="rate(true)">✓ Got It!<br><small>+10 pts</small></button>
+  </div>
+  <div class="reveal-note" id="rev-note">Tap the card to reveal pinyin &amp; meaning</div>
+</div>
+
+<!-- SUMMARY -->
+<div id="s-sum" class="screen">
+  <div class="sum-card">
+    <div class="sum-emoji" id="sum-emoji">🎉</div>
+    <div class="sum-title">Session Complete!</div>
+    <div class="sum-sub" id="sum-sub">Great work!</div>
+
+    <div class="mascot-wrap" style="margin:14px 0;">
+      <svg id="p-sum" class="panda" width="110" height="110" viewBox="0 0 160 160">
+        <ellipse cx="80" cy="112" rx="48" ry="36" fill="white"/>
+        <ellipse cx="37" cy="44" rx="21" ry="21" fill="#2C2C2C"/>
+        <ellipse cx="123" cy="44" rx="21" ry="21" fill="#2C2C2C"/>
+        <ellipse cx="80" cy="70" rx="45" ry="43" fill="white"/>
+        <ellipse cx="58" cy="63" rx="16" ry="13" fill="#1A1A1A"/>
+        <ellipse cx="102" cy="63" rx="16" ry="13" fill="#1A1A1A"/>
+        <ellipse cx="58" cy="62" rx="8" ry="8" fill="white"/>
+        <ellipse cx="102" cy="62" rx="8" ry="8" fill="white"/>
+        <circle cx="60" cy="62" r="5" fill="#222"/>
+        <circle cx="104" cy="62" r="5" fill="#222"/>
+        <circle cx="62" cy="60" r="1.8" fill="white"/>
+        <circle cx="106" cy="60" r="1.8" fill="white"/>
+        <ellipse cx="80" cy="77" rx="8" ry="5" fill="#F9A8C0"/>
+        <path id="sum-mouth" d="M68 83 Q80 97 92 83" stroke="#F9A8C0" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="51" cy="79" rx="9" ry="5.5" fill="#FFB5A7" opacity="0.55"/>
+        <ellipse cx="109" cy="79" rx="9" ry="5.5" fill="#FFB5A7" opacity="0.55"/>
+        <ellipse cx="80" cy="116" rx="24" ry="18" fill="#F0F0F0"/>
+        <ellipse cx="31" cy="116" rx="15" ry="9" fill="white" transform="rotate(-18,31,116)"/>
+        <ellipse cx="129" cy="116" rx="15" ry="9" fill="white" transform="rotate(18,129,116)"/>
+      </svg>
+    </div>
+
+    <div class="sum-big" id="sum-pts">0</div>
+    <div class="sum-big-lbl">points this session</div>
+    <div class="sum-stats">
+      <div class="sum-stat"><div class="n g" id="sum-ok">0</div><div class="l">Got It ✓</div></div>
+      <div class="sum-stat"><div class="n r" id="sum-no">0</div><div class="l">Don't Know ✗</div></div>
+    </div>
+    <div class="sum-badge" id="sum-badge">
+      <div class="b-lbl">XP Level</div>
+      <div class="b-name" id="sum-lvl">学生 Student</div>
+    </div>
+    <div class="sum-msg" id="sum-msg">Every word learned brings you closer to fluency!</div>
+    <button class="btn-again" onclick="startSession()">🔄 Study Again</button>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<div class="pt-pop" id="pt-pop">+10</div>
+
+<script>
+// ── VOCABULARY: 200 real HSK 3-4 words ──
+const VOCAB = [
+  // HSK 3
+  {c:'爱好',p:'àihào',e:'hobby, interest'},
+  {c:'安静',p:'ānjìng',e:'quiet, peaceful'},
+  {c:'把',p:'bǎ',e:'(disposal particle); to hold'},
+  {c:'搬',p:'bān',e:'to move (heavy objects)'},
+  {c:'帮忙',p:'bāng máng',e:'to help, do a favour'},
+  {c:'包',p:'bāo',e:'bag, packet; to wrap'},
+  {c:'饱',p:'bǎo',e:'full (after eating), satiated'},
+  {c:'变化',p:'biànhuà',e:'change, variation'},
+  {c:'别人',p:'biérén',e:'other people, others'},
+  {c:'冰箱',p:'bīngxiāng',e:'refrigerator, fridge'},
+  {c:'菜单',p:'càidān',e:'menu'},
+  {c:'参加',p:'cānjiā',e:'to participate, join, attend'},
+  {c:'超市',p:'chāoshì',e:'supermarket'},
+  {c:'成绩',p:'chéngjì',e:'grade, score, achievement'},
+  {c:'迟到',p:'chídào',e:'to be late, arrive late'},
+  {c:'出发',p:'chūfā',e:'to set off, depart'},
+  {c:'厨房',p:'chúfáng',e:'kitchen'},
+  {c:'从来',p:'cónglái',e:'always; ever; never (with neg.)'},
+  {c:'聪明',p:'cōngming',e:'clever, smart, intelligent'},
+  {c:'打扫',p:'dǎsǎo',e:'to clean, sweep'},
+  {c:'打算',p:'dǎsuàn',e:'to plan, intend'},
+  {c:'带',p:'dài',e:'to bring, take along; belt'},
+  {c:'担心',p:'dānxīn',e:'to worry, be concerned'},
+  {c:'蛋糕',p:'dàngāo',e:'cake'},
+  {c:'当然',p:'dāngrán',e:'of course, naturally'},
+  {c:'地图',p:'dìtú',e:'map'},
+  {c:'电梯',p:'diàntī',e:'elevator, lift'},
+  {c:'动物',p:'dòngwù',e:'animal'},
+  {c:'发现',p:'fāxiàn',e:'to discover, find out'},
+  {c:'方便',p:'fāngbiàn',e:'convenient, handy'},
+  {c:'附近',p:'fùjìn',e:'nearby, in the vicinity'},
+  {c:'感冒',p:'gǎnmào',e:'cold (illness)'},
+  {c:'感觉',p:'gǎnjué',e:'feeling, sense, sensation'},
+  {c:'根据',p:'gēnjù',e:'according to, based on'},
+  {c:'故事',p:'gùshi',e:'story, tale'},
+  {c:'刮风',p:'guā fēng',e:'(it is) windy'},
+  {c:'关心',p:'guānxīn',e:'to care about, show concern'},
+  {c:'果汁',p:'guǒzhī',e:'fruit juice'},
+  {c:'过去',p:'guòqù',e:'the past; to go over'},
+  {c:'害怕',p:'hàipà',e:'to fear, be scared of'},
+  {c:'汉字',p:'hànzì',e:'Chinese character'},
+  {c:'合适',p:'héshì',e:'suitable, appropriate, fitting'},
+  {c:'护照',p:'hùzhào',e:'passport'},
+  {c:'花',p:'huā',e:'flower; to spend (money/time)'},
+  {c:'坏',p:'huài',e:'bad, evil; broken'},
+  {c:'换',p:'huàn',e:'to exchange, swap, change'},
+  {c:'回答',p:'huídá',e:'to answer, reply, respond'},
+  {c:'活动',p:'huódòng',e:'activity, event'},
+  {c:'或者',p:'huòzhě',e:'or (in statements)'},
+  {c:'几乎',p:'jīhū',e:'almost, nearly'},
+  {c:'记得',p:'jìde',e:'to remember, recall'},
+  {c:'季节',p:'jìjié',e:'season'},
+  {c:'简单',p:'jiǎndān',e:'simple, easy, uncomplicated'},
+  {c:'健康',p:'jiànkāng',e:'healthy; health'},
+  {c:'结束',p:'jiéshù',e:'to end, finish, conclude'},
+  {c:'结婚',p:'jiéhūn',e:'to get married'},
+  {c:'借',p:'jiè',e:'to borrow; to lend'},
+  {c:'进步',p:'jìnbù',e:'progress, improvement; to improve'},
+  {c:'经常',p:'jīngcháng',e:'often, frequently, regularly'},
+  {c:'决定',p:'juédìng',e:'to decide; decision'},
+  {c:'咖啡',p:'kāfēi',e:'coffee'},
+  {c:'开心',p:'kāixīn',e:'happy, delighted, cheerful'},
+  {c:'可能',p:'kěnéng',e:'possible; maybe, perhaps'},
+  {c:'口渴',p:'kǒukě',e:'thirsty'},
+  {c:'礼物',p:'lǐwù',e:'gift, present'},
+  {c:'离开',p:'líkāi',e:'to leave, depart from'},
+  {c:'练习',p:'liànxí',e:'to practise; exercise, drill'},
+  {c:'楼',p:'lóu',e:'building, floor, storey'},
+  {c:'旅游',p:'lǚyóu',e:'to travel; tourism'},
+  {c:'马上',p:'mǎshàng',e:'immediately, right away, at once'},
+  {c:'帽子',p:'màozi',e:'hat, cap'},
+  {c:'爬山',p:'pá shān',e:'to climb a mountain'},
+  {c:'盘子',p:'pánzi',e:'plate, dish, tray'},
+  {c:'普通话',p:'pǔtōnghuà',e:'Mandarin Chinese (standard)'},
+  {c:'其实',p:'qíshí',e:'actually, in fact, as a matter of fact'},
+  {c:'骑',p:'qí',e:'to ride (bicycle, horse)'},
+  {c:'情况',p:'qíngkuàng',e:'situation, condition, state of affairs'},
+  {c:'全',p:'quán',e:'whole, complete, entire; all'},
+  {c:'热情',p:'rèqíng',e:'enthusiasm, passion; enthusiastic'},
+  {c:'认为',p:'rènwéi',e:'to think, believe, consider'},
+  {c:'如果',p:'rúguǒ',e:'if, in case, suppose that'},
+  {c:'商量',p:'shāngliang',e:'to discuss, consult, talk over'},
+  {c:'身体',p:'shēntǐ',e:'body; health, physical condition'},
+  {c:'生气',p:'shēngqì',e:'to get angry, be mad'},
+  {c:'声音',p:'shēngyīn',e:'sound, voice, noise'},
+  {c:'事情',p:'shìqing',e:'matter, affair, thing, business'},
+  {c:'首先',p:'shǒuxiān',e:'first of all, first and foremost'},
+  {c:'树',p:'shù',e:'tree'},
+  {c:'特别',p:'tèbié',e:'especially; special, particular'},
+  {c:'提',p:'tí',e:'to carry (in hand); raise; mention'},
+  {c:'同意',p:'tóngyì',e:'to agree, consent'},
+  {c:'突然',p:'tūrán',e:'suddenly, all of a sudden'},
+  {c:'外国',p:'wàiguó',e:'foreign country'},
+  {c:'完成',p:'wánchéng',e:'to complete, finish, accomplish'},
+  {c:'忘',p:'wàng',e:'to forget'},
+  {c:'文化',p:'wénhuà',e:'culture, civilization'},
+  {c:'小心',p:'xiǎoxīn',e:'careful, cautious; watch out!'},
+  {c:'笑',p:'xiào',e:'to laugh; to smile'},
+  {c:'心情',p:'xīnqíng',e:'mood, feeling, state of mind'},
+  {c:'熊猫',p:'xióngmāo',e:'giant panda'},
+  {c:'选择',p:'xuǎnzé',e:'to choose, select; choice'},
+  {c:'眼睛',p:'yǎnjing',e:'eye'},
+  {c:'一般',p:'yībān',e:'ordinary, general; generally'},
+  {c:'一定',p:'yīdìng',e:'certainly, definitely; certain'},
+  {c:'以后',p:'yǐhòu',e:'afterwards, later, in the future'},
+  {c:'以前',p:'yǐqián',e:'before, previously, in the past'},
+  {c:'因此',p:'yīncǐ',e:'therefore, so, hence'},
+  {c:'应该',p:'yīnggāi',e:'should, ought to, must'},
+  {c:'影响',p:'yǐngxiǎng',e:'to influence, affect; influence'},
+  // HSK 4
+  {c:'安排',p:'ānpái',e:'to arrange, plan; arrangement'},
+  {c:'按照',p:'ànzhào',e:'according to, in accordance with'},
+  {c:'报名',p:'bàomíng',e:'to sign up, register, enrol'},
+  {c:'抱怨',p:'bàoyuàn',e:'to complain, grumble'},
+  {c:'必要',p:'bìyào',e:'necessary, essential'},
+  {c:'表达',p:'biǎodá',e:'to express, convey (feelings)'},
+  {c:'表演',p:'biǎoyǎn',e:'to perform; performance, show'},
+  {c:'不过',p:'búguò',e:'but, however; only, merely'},
+  {c:'猜',p:'cāi',e:'to guess'},
+  {c:'差不多',p:'chàbuduō',e:'almost, about the same'},
+  {c:'成功',p:'chénggōng',e:'to succeed; success, successful'},
+  {c:'承认',p:'chéngrèn',e:'to admit, acknowledge, recognize'},
+  {c:'吃惊',p:'chī jīng',e:'to be surprised, astonished'},
+  {c:'出现',p:'chūxiàn',e:'to appear, emerge, arise'},
+  {c:'传统',p:'chuántǒng',e:'tradition; traditional'},
+  {c:'代表',p:'dàibiǎo',e:'representative; to represent'},
+  {c:'当地',p:'dāngdì',e:'local, in the locality'},
+  {c:'导游',p:'dǎoyóu',e:'tour guide'},
+  {c:'的确',p:'díquè',e:'indeed, certainly, really'},
+  {c:'地球',p:'dìqiú',e:'Earth, the globe'},
+  {c:'调查',p:'diàochá',e:'to investigate, survey; investigation'},
+  {c:'对比',p:'duìbǐ',e:'to contrast, compare; contrast'},
+  {c:'发展',p:'fāzhǎn',e:'to develop; development, growth'},
+  {c:'翻译',p:'fānyì',e:'to translate; translation, interpreter'},
+  {c:'方向',p:'fāngxiàng',e:'direction, orientation'},
+  {c:'符合',p:'fúhé',e:'to conform to, comply with, meet'},
+  {c:'改变',p:'gǎibiàn',e:'to change, alter, transform'},
+  {c:'感激',p:'gǎnjī',e:'to be grateful, thankful'},
+  {c:'工具',p:'gōngjù',e:'tool, instrument, means'},
+  {c:'共同',p:'gòngtóng',e:'common, joint; together'},
+  {c:'沟通',p:'gōutōng',e:'to communicate; communication'},
+  {c:'观点',p:'guāndiǎn',e:'point of view, perspective, standpoint'},
+  {c:'规定',p:'guīdìng',e:'regulation, rule; to stipulate'},
+  {c:'后悔',p:'hòuhuǐ',e:'to regret, feel remorse'},
+  {c:'吸引',p:'xīyǐn',e:'to attract, appeal to, draw'},
+  {c:'积极',p:'jījí',e:'positive, active, enthusiastic'},
+  {c:'即使',p:'jíshǐ',e:'even if, even though'},
+  {c:'计划',p:'jìhuà',e:'plan, project; to plan'},
+  {c:'坚持',p:'jiānchí',e:'to persist, persevere, insist on'},
+  {c:'建议',p:'jiànyì',e:'to suggest; suggestion, advice'},
+  {c:'将来',p:'jiānglái',e:'future, in the future'},
+  {c:'交流',p:'jiāoliú',e:'to exchange, communicate, interact'},
+  {c:'接受',p:'jiēshòu',e:'to accept, receive, take'},
+  {c:'紧张',p:'jǐnzhāng',e:'nervous, tense; strained'},
+  {c:'竟然',p:'jìngrán',e:'unexpectedly, surprisingly, actually'},
+  {c:'举行',p:'jǔxíng',e:'to hold (a meeting or event)'},
+  {c:'考虑',p:'kǎolǜ',e:'to consider, think over, weigh'},
+  {c:'科学',p:'kēxué',e:'science; scientific'},
+  {c:'克服',p:'kèfú',e:'to overcome, surmount'},
+  {c:'困难',p:'kùnnán',e:'difficult; difficulty, hardship'},
+  {c:'理由',p:'lǐyóu',e:'reason, excuse, grounds'},
+  {c:'厉害',p:'lìhai',e:'impressive, fierce; severe, terrible'},
+  {c:'联系',p:'liánxì',e:'to contact, get in touch; connection'},
+  {c:'了解',p:'liǎojiě',e:'to understand, know about'},
+  {c:'另外',p:'lìngwài',e:'other, another; in addition'},
+  {c:'留学',p:'liúxué',e:'to study abroad'},
+  {c:'马虎',p:'mǎhu',e:'careless, sloppy, casual'},
+  {c:'满足',p:'mǎnzú',e:'to satisfy, be content with; satisfaction'},
+  {c:'麻烦',p:'máfan',e:'trouble, bother; troublesome'},
+  {c:'目的',p:'mùdì',e:'purpose, goal, objective'},
+  {c:'难道',p:'nándào',e:'could it be that …? (rhetorical)'},
+  {c:'内容',p:'nèiróng',e:'content, substance, subject matter'},
+  {c:'偶尔',p:'ǒu\'ěr',e:'occasionally, once in a while'},
+  {c:'批评',p:'pīpíng',e:'to criticize; criticism'},
+  {c:'普遍',p:'pǔbiàn',e:'common, universal, widespread'},
+  {c:'其中',p:'qízhōng',e:'among them, in which, within that'},
+  {c:'气候',p:'qìhòu',e:'climate'},
+  {c:'亲戚',p:'qīnqi',e:'relative, family member'},
+  {c:'轻松',p:'qīngsōng',e:'relaxed, easy, light'},
+  {c:'取得',p:'qǔdé',e:'to achieve, obtain, gain'},
+  {c:'确实',p:'quèshí',e:'indeed, truly, really'},
+  {c:'缺少',p:'quēshǎo',e:'to lack, be short of'},
+  {c:'热闹',p:'rènao',e:'lively, bustling, busy'},
+  {c:'认真',p:'rènzhēn',e:'serious, earnest, careful'},
+  {c:'散步',p:'sànbù',e:'to take a walk, stroll'},
+  {c:'深',p:'shēn',e:'deep, profound'},
+  {c:'失望',p:'shīwàng',e:'disappointed; disappointing'},
+  {c:'随便',p:'suíbiàn',e:'casual, random; as you like'},
+  {c:'提高',p:'tígāo',e:'to improve, raise, enhance'},
+  {c:'通过',p:'tōngguò',e:'to pass through; by means of'},
+  {c:'完全',p:'wánquán',e:'completely, entirely, absolutely'},
+  {c:'温度',p:'wēndù',e:'temperature'},
+  {c:'消息',p:'xiāoxi',e:'news, message, information'},
+  {c:'相同',p:'xiāngtóng',e:'same, identical, alike'},
+  {c:'详细',p:'xiángxì',e:'detailed, thorough; in detail'},
+  {c:'效果',p:'xiàoguǒ',e:'effect, result, outcome'},
+  {c:'压力',p:'yālì',e:'pressure, stress'},
+  {c:'严重',p:'yánzhòng',e:'serious, severe, critical'},
+  {c:'研究',p:'yánjiu',e:'research, study; to research'},
+  {c:'要求',p:'yāoqiú',e:'requirement, demand; to require'},
+  {c:'以为',p:'yǐwéi',e:'to think (mistakenly), assume'},
+  {c:'意见',p:'yìjiàn',e:'opinion, suggestion; objection'},
+  {c:'印象',p:'yìnxiàng',e:'impression'},
+  {c:'优点',p:'yōudiǎn',e:'advantage, merit, strong point'},
+  {c:'愉快',p:'yúkuài',e:'pleasant, happy, joyful'},
+  {c:'原来',p:'yuánlái',e:'originally; as it turns out'},
+  {c:'原因',p:'yuányīn',e:'reason, cause'},
+  {c:'增加',p:'zēngjiā',e:'to increase, add, grow'},
+  {c:'正常',p:'zhèngcháng',e:'normal, regular'},
+  {c:'正确',p:'zhèngquè',e:'correct, accurate, right'},
+  {c:'直接',p:'zhíjiē',e:'direct, straightforward; directly'},
+  {c:'只好',p:'zhǐhǎo',e:'have no choice but, have to'},
+  {c:'重要',p:'zhòngyào',e:'important, significant'},
+  {c:'主意',p:'zhǔyi',e:'idea, plan, decision'},
+  {c:'注意',p:'zhùyì',e:'to pay attention to, be careful'},
+];
+
+// ── STATE ──
+let totalXP = 0, sessCount = 0, bestScore = 0;
+let words = [], idx = 0, sessScore = 0, okCnt = 0, noCnt = 0, flipped = false;
+
+// ── HELPERS ──
+function getLevel(xp) {
+  if (xp >= 300) return '先生 Master';
+  if (xp >= 100) return '秀才 Scholar';
+  return '学生 Student';
+}
+function getLevelBg(xp) {
+  if (xp >= 300) return 'linear-gradient(135deg,#F093FB,#F5576C)';
+  if (xp >= 100) return 'linear-gradient(135deg,#4FACFE,#00F2FE)';
+  return 'linear-gradient(135deg,var(--lavender),var(--peach))';
+}
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function updateHome() {
+  document.getElementById('h-xp').textContent   = totalXP;
+  document.getElementById('h-sess').textContent = sessCount;
+  document.getElementById('h-best').textContent = bestScore;
+  document.getElementById('h-lvl').textContent  = getLevel(totalXP);
+  document.getElementById('h-pill').style.background = getLevelBg(totalXP);
+}
+
+// ── SESSION ──
+function startSession() {
+  words = [...VOCAB].sort(() => Math.random() - 0.5).slice(0, 10);
+  idx = 0; sessScore = 0; okCnt = 0; noCnt = 0;
+  show('s-study');
+  renderWord();
+}
+
+function renderWord() {
+  const w = words[idx];
+  flipped = false;
+  const card = document.getElementById('word-card');
+  card.classList.remove('flipped');
+  document.getElementById('c-zh').textContent  = w.c;
+  document.getElementById('c-py').textContent  = w.p;
+  document.getElementById('c-en').textContent  = w.e;
+  document.getElementById('c-zh2').textContent = w.c;
+  document.getElementById('ans-btns').classList.add('hidden');
+  document.getElementById('rev-note').style.display = 'block';
+  document.getElementById('prog-txt').textContent = `Word ${idx + 1} / ${words.length}`;
+  document.getElementById('prog-fill').style.width = `${(idx / words.length) * 100}%`;
+  document.getElementById('sess-score').textContent = sessScore;
+  setMood('neutral');
+}
+
+function flipCard() {
+  if (flipped) return;
+  flipped = true;
+  document.getElementById('word-card').classList.add('flipped');
+  document.getElementById('ans-btns').classList.remove('hidden');
+  document.getElementById('rev-note').style.display = 'none';
+  setMood('wow');
+}
+
+function rate(correct) {
+  const pts = correct ? 10 : 2;
+  sessScore += pts;
+  if (correct) okCnt++; else noCnt++;
+  document.getElementById('sess-score').textContent = sessScore;
+  flashPt(correct ? `+10 ⭐` : `+2`, correct ? '#55EFC4' : '#FFB5A7');
+  setMood(correct ? 'happy' : 'sad');
+  setTimeout(() => {
+    idx++;
+    if (idx >= words.length) endSession();
+    else renderWord();
+  }, 650);
+}
+
+function endSession() {
+  totalXP += sessScore;
+  sessCount++;
+  if (sessScore > bestScore) bestScore = sessScore;
+  updateHome();
+  const pct = okCnt / words.length;
+  const [emoji, sub, msg] =
+    pct === 1   ? ['🏆','Perfect score! Incredible!','A flawless round — you\'re a true 先生! 🏆'] :
+    pct >= 0.7  ? ['🎉','Great job! Keep it up!','Excellent work! Your Chinese grows stronger every day. 加油！'] :
+    pct >= 0.4  ? ['😊','Good effort! Keep practising!','Every session sharpens your memory. Review the tricky ones! 继续努力！'] :
+                  ['💪','Keep going — you\'ve got this!','Don\'t give up! Repetition is the key to mastery. 你可以的！'];
+  document.getElementById('sum-emoji').textContent = emoji;
+  document.getElementById('sum-sub').textContent   = sub;
+  document.getElementById('sum-msg').textContent   = msg;
+  document.getElementById('sum-pts').textContent   = sessScore;
+  document.getElementById('sum-ok').textContent    = okCnt;
+  document.getElementById('sum-no').textContent    = noCnt;
+  document.getElementById('sum-lvl').textContent   = getLevel(totalXP);
+  document.getElementById('sum-badge').style.background = getLevelBg(totalXP);
+  // summary panda: big smile if good, sad mouth if bad
+  const sm = document.getElementById('sum-mouth');
+  sm.setAttribute('d', pct >= 0.5 ? 'M68 83 Q80 97 92 83' : 'M70 90 Q80 81 90 90');
+  show('s-sum');
+  if (pct >= 0.7) confetti();
+}
+
+// ── PANDA MOOD ──
+function setMood(mood) {
+  const p = document.getElementById('p-study');
+  p.classList.remove('bounce','shake');
+  ['m-happy','m-sad','m-wow'].forEach(id => document.getElementById(id).style.display = 'none');
+  if (mood === 'happy')   { document.getElementById('m-happy').style.display='block'; void p.offsetWidth; p.classList.add('bounce'); }
+  else if (mood === 'sad') { document.getElementById('m-sad').style.display='block';  void p.offsetWidth; p.classList.add('shake'); }
+  else if (mood === 'wow') { document.getElementById('m-wow').style.display='block'; }
+  else                     { document.getElementById('m-happy').style.display='block'; }
+}
+
+// ── POINT FLASH ──
+function flashPt(txt, color) {
+  const el = document.getElementById('pt-pop');
+  el.textContent = txt;
+  el.style.color = color;
+  el.classList.remove('go');
+  void el.offsetWidth;
+  el.classList.add('go');
+}
+
+// ── CONFETTI ──
+function confetti() {
+  const cols = ['#FFB5A7','#B5EAD7','#C7B8EA','#FFEAA7','#74B9FF','#FF7675','#6BCB77','#FD79A8'];
+  for (let i = 0; i < 70; i++) {
+    setTimeout(() => {
+      const d = document.createElement('div');
+      d.className = 'cf';
+      d.style.cssText = `left:${Math.random()*100}vw;background:${cols[i%cols.length]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*0.6}s`;
+      document.body.appendChild(d);
+      setTimeout(() => d.remove(), 4500);
+    }, i * 28);
+  }
+}
+
+updateHome();
+</script>
+</body>
+</html>
